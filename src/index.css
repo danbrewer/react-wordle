@@ -9,8 +9,32 @@
   --default-cell-border-color: theme('colors.black');
   --default-cell-text-color: theme('colors.black');
   --absent-cell-bg-color: theme('colors.slate.400');
-  --correct-cell-bg-color: theme('colors.green.400');
+  --correct-cell-bg-color: theme('colors.correct');
   --present-cell-bg-color: theme('colors.yellow.400');
+}
+
+.correct-color {
+  background-color: theme('colors.correct');
+}
+
+.correct-border {
+  border-color: theme('colors.correct');
+}
+
+.present-color {
+  background-color: theme('colors.present');
+}
+
+.present-border {
+  border-color: theme('colors.present');
+}
+
+.absent-color {
+  background-color: theme('colors.absent');
+}
+
+.key-color {
+  background-color: theme('colors.available');
 }
 
 .dark {
