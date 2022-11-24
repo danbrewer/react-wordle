@@ -16,6 +16,7 @@ import {
 import {
   MAX_CHALLENGES,
   REVEAL_TIME_MS,
+  LOADING_REVEAL_TIME_MS,
   WELCOME_INFO_MODAL_MS,
   DISCOURAGE_INAPP_BROWSERS,
 } from './constants/settings'
@@ -66,6 +67,7 @@ function App() {
     getStoredIsHighContrastMode()
   )
   const [isRevealing, setIsRevealing] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [guesses, setGuesses] = useState<string[]>(() => {
     const loaded = loadGameStateFromLocalStorage()
     if (loaded?.solution !== solution) {
@@ -250,6 +252,19 @@ function App() {
     }
   }
 
+  // useEffect(()=>{
+
+  //   setIsLoading(true)
+  //   // console.log(`loading: ${isLoading}`);
+  //   // turn this back off after all
+  //   // chars have been revealed
+  //   setTimeout(() => {
+  //     setIsLoading(false);
+  //     console.log(`loading: ${isLoading}`);
+  //   }, LOADING_REVEAL_TIME_MS * solution.length)
+
+  //   }, [isLoading])
+
   return (
     <div className="h-screen flex flex-col">
       <Navbar
@@ -265,6 +280,7 @@ function App() {
             currentGuess={currentGuess}
             isRevealing={isRevealing}
             currentRowClassName={currentRowClass}
+            loading={isLoading}
           />
         </div>
         <Keyboard

@@ -6,9 +6,11 @@ type Props = {
   solution: string
   guess: string
   isRevealing?: boolean
+  loading?: boolean
+  row?: number
 }
 
-export const CompletedRow = ({ solution, guess, isRevealing }: Props) => {
+export const CompletedRow = ({ solution, guess, isRevealing, loading, row }: Props) => {
   const statuses = getGuessStatuses(solution, guess)
   const splitGuess = unicodeSplit(guess)
 
@@ -22,6 +24,8 @@ export const CompletedRow = ({ solution, guess, isRevealing }: Props) => {
           position={i}
           isRevealing={isRevealing}
           isCompleted
+          isLoading={loading}
+          row={row}
         />
       ))}
     </div>

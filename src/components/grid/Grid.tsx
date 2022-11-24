@@ -9,6 +9,7 @@ type Props = {
   currentGuess: string
   isRevealing?: boolean
   currentRowClassName: string
+  loading?: boolean
 }
 
 export const Grid = ({
@@ -17,6 +18,7 @@ export const Grid = ({
   currentGuess,
   isRevealing,
   currentRowClassName,
+  loading
 }: Props) => {
   const empties =
     guesses.length < MAX_CHALLENGES - 1
@@ -30,11 +32,15 @@ export const Grid = ({
           key={i}
           solution={solution}
           guess={guess}
-          isRevealing={isRevealing && guesses.length - 1 === i}
+          isRevealing=  {true /*isRevealing && guesses.length - 1 === i*/ }
+          row = {i}
         />
       ))}
       {guesses.length < MAX_CHALLENGES && (
-        <CurrentRow guess={currentGuess} className={currentRowClassName} />
+        <CurrentRow 
+          guess={currentGuess} 
+          className={currentRowClassName} 
+          loading={loading}/>
       )}
       {empties.map((_, i) => (
         <EmptyRow key={i} />

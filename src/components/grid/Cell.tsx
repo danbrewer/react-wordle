@@ -1,6 +1,6 @@
 import { CharStatus } from '../../lib/statuses'
 import classnames from 'classnames'
-import { REVEAL_TIME_MS } from '../../constants/settings'
+import { REVEAL_TIME_MS, LOADING_REVEAL_TIME_MS } from '../../constants/settings'
 import { getStoredIsHighContrastMode } from '../../lib/localStorage'
 
 type Props = {
@@ -8,7 +8,9 @@ type Props = {
   status?: CharStatus
   isRevealing?: boolean
   isCompleted?: boolean
+  isLoading?:boolean
   position?: number
+  row?:number
 }
 
 export const Cell = ({
@@ -16,12 +18,19 @@ export const Cell = ({
   status,
   isRevealing,
   isCompleted,
+  isLoading,
   position = 0,
+  row = 0
 }: Props) => {
   const isFilled = value && !isCompleted
+  const revealTime = isLoading ? LOADING_REVEAL_TIME_MS : REVEAL_TIME_MS
   const shouldReveal = isRevealing && isCompleted
-  const animationDelay = `${position * REVEAL_TIME_MS}ms`
+  const animationDelay =  `${(position * 100) + revealTime + row * 300}ms`
   const isHighContrast = getStoredIsHighContrastMode()
+
+  console.log(`animationDelay:${animationDelay}`)
+
+  // document.documentElement.style.setProperty('--reveal-animation-speed', `${revealTime}ms`);
 
   const classes = classnames(
     'w-14 h-14 border-solid border-2 flex items-center justify-center mx-0.5 text-4xl font-bold  dark:text-white',
