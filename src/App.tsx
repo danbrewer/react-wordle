@@ -4,6 +4,8 @@ import { Keyboard } from './components/keyboard/Keyboard'
 import { InfoModal } from './components/modals/InfoModal'
 import { StatsModal } from './components/modals/StatsModal'
 import { SettingsModal } from './components/modals/SettingsModal'
+import { createGlobalStyle } from 'styled-components'
+
 import {
   WIN_MESSAGES,
   GAME_COPIED_MESSAGE,
@@ -16,7 +18,6 @@ import {
 import {
   MAX_CHALLENGES,
   REVEAL_TIME_MS,
-  LOADING_REVEAL_TIME_MS,
   WELCOME_INFO_MODAL_MS,
   DISCOURAGE_INAPP_BROWSERS,
 } from './constants/settings'
@@ -41,6 +42,15 @@ import { AlertContainer } from './components/alerts/AlertContainer'
 import { useAlert } from './context/AlertContext'
 import { Navbar } from './components/navbar/Navbar'
 import { isInAppBrowser } from './lib/browser'
+
+const GlobalStyles = createGlobalStyle`
+  html {
+    --min-tap-target-height: 32px;
+    @media (pointer: coarse) {
+      --min-tap-target-height: 48px;
+    }
+  }
+`
 
 function App() {
   const prefersDarkMode = window.matchMedia(
@@ -67,7 +77,6 @@ function App() {
     getStoredIsHighContrastMode()
   )
   const [isRevealing, setIsRevealing] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
   const [guesses, setGuesses] = useState<string[]>(() => {
     const loaded = loadGameStateFromLocalStorage()
     if (loaded?.solution !== solution) {
@@ -266,62 +275,64 @@ function App() {
   //   }, [isLoading])
 
   return (
-    <div className="h-screen flex flex-col">
-      <Navbar
-        setIsInfoModalOpen={setIsInfoModalOpen}
-        setIsStatsModalOpen={setIsStatsModalOpen}
-        setIsSettingsModalOpen={setIsSettingsModalOpen}
-      />
-      <div className="pt-2 px-1 pb-8 md:max-w-7xl w-full mx-auto sm:px-6 lg:px-8 flex flex-col grow">
-        <div className="pb-6 grow">
-          <Grid
+    <>
+      <GlobalStyles />
+      <div className="h-screen flex flex-col">
+        <Navbar
+          setIsInfoModalOpen={setIsInfoModalOpen}
+          setIsStatsModalOpen={setIsStatsModalOpen}
+          setIsSettingsModalOpen={setIsSettingsModalOpen}
+        />
+        <div className="pt-2 px-1 pb-8 md:max-w-7xl w-full mx-auto sm:px-6 lg:px-8 flex flex-col grow">
+          <div className="pb-6 grow">
+            <Grid
+              solution={solution}
+              guesses={guesses}
+              currentGuess={currentGuess}
+              isRevealing={isRevealing}
+              currentRowClassName={currentRowClass}
+            />
+          </div>
+          <Keyboard
+            onChar={onChar}
+            onDelete={onDelete}
+            onEnter={onEnter}
             solution={solution}
             guesses={guesses}
-            currentGuess={currentGuess}
             isRevealing={isRevealing}
-            currentRowClassName={currentRowClass}
-            loading={isLoading}
           />
+          <InfoModal
+            isOpen={isInfoModalOpen}
+            handleClose={() => setIsInfoModalOpen(false)}
+          />
+          <StatsModal
+            isOpen={isStatsModalOpen}
+            handleClose={() => setIsStatsModalOpen(false)}
+            solution={solution}
+            guesses={guesses}
+            gameStats={stats}
+            isGameLost={isGameLost}
+            isGameWon={isGameWon}
+            handleShareToClipboard={() => showSuccessAlert(GAME_COPIED_MESSAGE)}
+            isHardMode={isHardMode}
+            isDarkMode={isDarkMode}
+            isHighContrastMode={isHighContrastMode}
+            numberOfGuessesMade={guesses.length}
+          />
+          <SettingsModal
+            isOpen={isSettingsModalOpen}
+            handleClose={() => setIsSettingsModalOpen(false)}
+            isHardMode={isHardMode}
+            handleHardMode={handleHardMode}
+            isDarkMode={isDarkMode}
+            handleDarkMode={handleDarkMode}
+            isHighContrastMode={isHighContrastMode}
+            handleHighContrastMode={handleHighContrastMode}
+          />
+          <AlertContainer />
         </div>
-        <Keyboard
-          onChar={onChar}
-          onDelete={onDelete}
-          onEnter={onEnter}
-          solution={solution}
-          guesses={guesses}
-          isRevealing={isRevealing}
-        />
-        <InfoModal
-          isOpen={isInfoModalOpen}
-          handleClose={() => setIsInfoModalOpen(false)}
-        />
-        <StatsModal
-          isOpen={isStatsModalOpen}
-          handleClose={() => setIsStatsModalOpen(false)}
-          solution={solution}
-          guesses={guesses}
-          gameStats={stats}
-          isGameLost={isGameLost}
-          isGameWon={isGameWon}
-          handleShareToClipboard={() => showSuccessAlert(GAME_COPIED_MESSAGE)}
-          isHardMode={isHardMode}
-          isDarkMode={isDarkMode}
-          isHighContrastMode={isHighContrastMode}
-          numberOfGuessesMade={guesses.length}
-        />
-        <SettingsModal
-          isOpen={isSettingsModalOpen}
-          handleClose={() => setIsSettingsModalOpen(false)}
-          isHardMode={isHardMode}
-          handleHardMode={handleHardMode}
-          isDarkMode={isDarkMode}
-          handleDarkMode={handleDarkMode}
-          isHighContrastMode={isHighContrastMode}
-          handleHighContrastMode={handleHighContrastMode}
-        />
-        <AlertContainer />
       </div>
-    </div>
+    </>
   )
 }
 
