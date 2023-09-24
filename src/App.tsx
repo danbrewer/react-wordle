@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react'
 import { Grid } from './components/grid/Grid'
 import { Keyboard } from './components/keyboard/Keyboard'
-import { InfoModal } from './components/modals/InfoModal'
-import { StatsModal } from './components/modals/StatsModal'
-import { SettingsModal } from './components/modals/SettingsModal'
-import { createGlobalStyle } from 'styled-components'
+// import { InfoModal } from './components/modals/InfoModal'
+// import { StatsModal } from './components/modals/StatsModal'
+// import { SettingsModal } from './components/modals/SettingsModal'
+// import { createGlobalStyle } from 'styled-components'
 
 import {
-  WIN_MESSAGES,
-  GAME_COPIED_MESSAGE,
+  // WIN_MESSAGES,
+  // GAME_COPIED_MESSAGE,
   NOT_ENOUGH_LETTERS_MESSAGE,
   WORD_NOT_FOUND_MESSAGE,
   CORRECT_WORD_MESSAGE,
@@ -18,7 +18,7 @@ import {
 import {
   MAX_CHALLENGES,
   REVEAL_TIME_MS,
-  WELCOME_INFO_MODAL_MS,
+  // WELCOME_INFO_MODAL_MS,
   DISCOURAGE_INAPP_BROWSERS,
 } from './constants/settings'
 import {
@@ -38,19 +38,18 @@ import {
 import { default as GraphemeSplitter } from 'grapheme-splitter'
 
 import './App.css'
-import { AlertContainer } from './components/alerts/AlertContainer'
+// import { AlertContainer } from './components/alerts/AlertContainer'
 import { useAlert } from './context/AlertContext'
-import { Navbar } from './components/navbar/Navbar'
+// import { Navbar } from './components/navbar/Navbar'
 import { isInAppBrowser } from './lib/browser'
+import { Guess, StoredGameState } from './lib/reactletypes'
 
-const GlobalStyles = createGlobalStyle`
-  html {
-    --min-tap-target-height: 32px;
-    @media (pointer: coarse) {
-      --min-tap-target-height: 48px;
-    }
-  }
-`
+// const GlobalStyles = createGlobalStyle`
+//   html {
+//     --reveal-animation-speed: 350ms;
+//     }
+//   }
+// `
 
 function App() {
   const prefersDarkMode = window.matchMedia(
@@ -59,11 +58,14 @@ function App() {
 
   const { showError: showErrorAlert, showSuccess: showSuccessAlert } =
     useAlert()
-  const [currentGuess, setCurrentGuess] = useState('')
+  const [currentGuess, setCurrentGuess] = useState<Guess>({
+    value: '',
+    isNew: true,
+  })
   const [isGameWon, setIsGameWon] = useState(false)
-  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false)
-  const [isStatsModalOpen, setIsStatsModalOpen] = useState(false)
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
+  // const [isInfoModalOpen, setIsInfoModalOpen] = useState(false)
+  // const [isStatsModalOpen, setIsStatsModalOpen] = useState(false)
+  // const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [currentRowClass, setCurrentRowClass] = useState('')
   const [isGameLost, setIsGameLost] = useState(false)
   const [isDarkMode, setIsDarkMode] = useState(
@@ -74,15 +76,15 @@ function App() {
       : false
   )
   const [isHighContrastMode, setIsHighContrastMode] = useState(
-    getStoredIsHighContrastMode()
+    false // getStoredIsHighContrastMode()
   )
-  const [isRevealing, setIsRevealing] = useState(false)
-  const [guesses, setGuesses] = useState<string[]>(() => {
+  // const [isRevealing, setIsRevealing] = useState(false)
+  const [guesses, setGuesses] = useState<Guess[]>(() => {
     const loaded = loadGameStateFromLocalStorage()
     if (loaded?.solution !== solution) {
       return []
     }
-    const gameWasWon = loaded.guesses.includes(solution)
+    const gameWasWon = loaded.guesses.some((g) => g === solution)
     if (gameWasWon) {
       setIsGameWon(true)
     }
@@ -92,26 +94,27 @@ function App() {
         persist: true,
       })
     }
-    return loaded.guesses
+    // this is how you cast a mapped array to a Typescript type
+    return loaded.guesses.map((g) => ({ value: g } as Guess))
   })
 
-  const [stats, setStats] = useState(() => loadStats())
+  // const [stats, setStats] = useState(() => loadStats())
 
-  const [isHardMode, setIsHardMode] = useState(
-    localStorage.getItem('gameMode')
-      ? localStorage.getItem('gameMode') === 'hard'
-      : false
-  )
+  // const [isHardMode, setIsHardMode] = useState(
+  //   localStorage.getItem('gameMode')
+  //     ? localStorage.getItem('gameMode') === 'hard'
+  //     : false
+  // )
 
-  useEffect(() => {
-    // if no game state on load,
-    // show the user the how-to info modal
-    if (!loadGameStateFromLocalStorage()) {
-      setTimeout(() => {
-        setIsInfoModalOpen(true)
-      }, WELCOME_INFO_MODAL_MS)
-    }
-  })
+  // useEffect(() => {
+  //   // if no game state on load,
+  //   // show the user the how-to info modal
+  //   if (!loadGameStateFromLocalStorage()) {
+  //     setTimeout(() => {
+  //       setIsInfoModalOpen(true)
+  //     }, WELCOME_INFO_MODAL_MS)
+  //   }
+  // })
 
   useEffect(() => {
     DISCOURAGE_INAPP_BROWSERS &&
@@ -143,7 +146,7 @@ function App() {
 
   const handleHardMode = (isHard: boolean) => {
     if (guesses.length === 0 || localStorage.getItem('gameMode') === 'hard') {
-      setIsHardMode(isHard)
+      // setIsHardMode(isHard)
       localStorage.setItem('gameMode', isHard ? 'hard' : 'normal')
     } else {
       showErrorAlert(HARD_MODE_ALERT_MESSAGE)
@@ -160,57 +163,63 @@ function App() {
   }
 
   useEffect(() => {
-    saveGameStateToLocalStorage({ guesses, solution })
+    const guessValues = guesses.map((g) => g.value)
+    saveGameStateToLocalStorage({ guesses: guessValues, solution })
   }, [guesses])
 
-  useEffect(() => {
-    if (isGameWon) {
-      const winMessage =
-        WIN_MESSAGES[Math.floor(Math.random() * WIN_MESSAGES.length)]
-      const delayMs = REVEAL_TIME_MS * solution.length
+  // useEffect(() => {
+  //   if (isGameWon) {
+  //     const winMessage =
+  //       WIN_MESSAGES[Math.floor(Math.random() * WIN_MESSAGES.length)]
+  //     const delayMs = REVEAL_TIME_MS * solution.length
 
-      showSuccessAlert(winMessage, {
-        delayMs,
-        onClose: () => setIsStatsModalOpen(true),
-      })
-    }
+  //     showSuccessAlert(winMessage, {
+  //       delayMs,
+  //       onClose: () => setIsStatsModalOpen(true),
+  //     })
+  //   }
 
-    if (isGameLost) {
-      setTimeout(() => {
-        setIsStatsModalOpen(true)
-      }, (solution.length + 1) * REVEAL_TIME_MS)
-    }
-  }, [isGameWon, isGameLost, showSuccessAlert])
+  //   if (isGameLost) {
+  //     setTimeout(() => {
+  //       setIsStatsModalOpen(true)
+  //     }, (solution.length + 1) * REVEAL_TIME_MS)
+  //   }
+  // }, [isGameWon, isGameLost, showSuccessAlert])
 
   const onChar = (value: string) => {
     if (
-      unicodeLength(`${currentGuess}${value}`) <= solution.length &&
+      unicodeLength(`${currentGuess.value}${value}`) <= solution.length &&
       guesses.length < MAX_CHALLENGES &&
       !isGameWon
     ) {
-      setCurrentGuess(`${currentGuess}${value}`)
+      setCurrentGuess({ value: `${currentGuess.value}${value}`, isNew: true })
     }
   }
 
   const onDelete = () => {
-    setCurrentGuess(
-      new GraphemeSplitter().splitGraphemes(currentGuess).slice(0, -1).join('')
-    )
+    setCurrentGuess({
+      ...currentGuess,
+      value: new GraphemeSplitter()
+        .splitGraphemes(currentGuess.value)
+        .slice(0, -1)
+        .join(''),
+    })
   }
 
   const onEnter = () => {
+    console.log(`KEYBOARD ENTER`)
     if (isGameWon || isGameLost) {
       return
     }
 
-    if (!(unicodeLength(currentGuess) === solution.length)) {
+    if (!(unicodeLength(currentGuess.value) === solution.length)) {
       setCurrentRowClass('jiggle')
       return showErrorAlert(NOT_ENOUGH_LETTERS_MESSAGE, {
         onClose: clearCurrentRowClass,
       })
     }
 
-    if (!isWordInWordList(currentGuess)) {
+    if (!isWordInWordList(currentGuess.value)) {
       setCurrentRowClass('jiggle')
       return showErrorAlert(WORD_NOT_FOUND_MESSAGE, {
         onClose: clearCurrentRowClass,
@@ -218,40 +227,33 @@ function App() {
     }
 
     // enforce hard mode - all guesses must contain all previously revealed letters
-    if (isHardMode) {
-      const firstMissingReveal = findFirstUnusedReveal(currentGuess, guesses)
-      if (firstMissingReveal) {
-        setCurrentRowClass('jiggle')
-        return showErrorAlert(firstMissingReveal, {
-          onClose: clearCurrentRowClass,
-        })
-      }
-    }
+    // if (isHardMode) {
+    //   const firstMissingReveal = findFirstUnusedReveal(currentGuess, guesses)
+    //   if (firstMissingReveal) {
+    //     setCurrentRowClass('jiggle')
+    //     return showErrorAlert(firstMissingReveal, {
+    //       onClose: clearCurrentRowClass,
+    //     })
+    //   }
+    // }
 
-    setIsRevealing(true)
-    // turn this back off after all
-    // chars have been revealed
-    setTimeout(() => {
-      setIsRevealing(false)
-    }, REVEAL_TIME_MS * solution.length)
-
-    const winningWord = isWinningWord(currentGuess)
+    const winningWord = isWinningWord(currentGuess.value)
 
     if (
-      unicodeLength(currentGuess) === solution.length &&
+      unicodeLength(currentGuess.value) === solution.length &&
       guesses.length < MAX_CHALLENGES &&
       !isGameWon
     ) {
       setGuesses([...guesses, currentGuess])
-      setCurrentGuess('')
+      setCurrentGuess({ value: '', isNew: true })
 
       if (winningWord) {
-        setStats(addStatsForCompletedGame(stats, guesses.length))
+        // setStats(addStatsForCompletedGame(stats, guesses.length))
         return setIsGameWon(true)
       }
 
       if (guesses.length === MAX_CHALLENGES - 1) {
-        setStats(addStatsForCompletedGame(stats, guesses.length + 1))
+        // setStats(addStatsForCompletedGame(stats, guesses.length + 1))
         setIsGameLost(true)
         showErrorAlert(CORRECT_WORD_MESSAGE(solution), {
           persist: true,
@@ -276,20 +278,19 @@ function App() {
 
   return (
     <>
-      <GlobalStyles />
+      {/* <GlobalStyles /> */}
       <div className="h-screen flex flex-col">
-        <Navbar
+        {/* <Navbar
           setIsInfoModalOpen={setIsInfoModalOpen}
           setIsStatsModalOpen={setIsStatsModalOpen}
           setIsSettingsModalOpen={setIsSettingsModalOpen}
-        />
+        /> */}
         <div className="pt-2 px-1 pb-8 md:max-w-7xl w-full mx-auto sm:px-6 lg:px-8 flex flex-col grow">
           <div className="pb-6 grow">
             <Grid
               solution={solution}
               guesses={guesses}
               currentGuess={currentGuess}
-              isRevealing={isRevealing}
               currentRowClassName={currentRowClass}
             />
           </div>
@@ -299,9 +300,8 @@ function App() {
             onEnter={onEnter}
             solution={solution}
             guesses={guesses}
-            isRevealing={isRevealing}
           />
-          <InfoModal
+          {/* <InfoModal
             isOpen={isInfoModalOpen}
             handleClose={() => setIsInfoModalOpen(false)}
           />
@@ -329,7 +329,7 @@ function App() {
             isHighContrastMode={isHighContrastMode}
             handleHighContrastMode={handleHighContrastMode}
           />
-          <AlertContainer />
+          <AlertContainer /> */}
         </div>
       </div>
     </>

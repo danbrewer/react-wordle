@@ -11,12 +11,13 @@ import {
   NEW_WORD_TEXT,
   SHARE_TEXT,
 } from '../../constants/strings'
+import { Guess } from '../../lib/reactletypes'
 
 type Props = {
   isOpen: boolean
   handleClose: () => void
   solution: string
-  guesses: string[]
+  guesses: Guess[]
   gameStats: GameStats
   isGameLost: boolean
   isGameWon: boolean

@@ -1,16 +1,17 @@
+import { Guess } from './reactletypes'
 import { unicodeSplit } from './words'
 
 export type CharStatus = 'absent' | 'present' | 'correct'
 
 export const getStatuses = (
   solution: string,
-  guesses: string[]
+  guesses: Guess[]
 ): { [key: string]: CharStatus } => {
   const charObj: { [key: string]: CharStatus } = {}
   const splitSolution = unicodeSplit(solution)
 
-  guesses.forEach((word) => {
-    unicodeSplit(word).forEach((letter, i) => {
+  guesses.forEach((guess) => {
+    unicodeSplit(guess.value).forEach((letter, i) => {
       if (!splitSolution.includes(letter)) {
         // make status absent
         return (charObj[letter] = 'absent')

@@ -3,13 +3,14 @@ import { Key } from './Key'
 import { useEffect } from 'react'
 import { ENTER_TEXT, DELETE_TEXT } from '../../constants/strings'
 import { localeAwareUpperCase } from '../../lib/words'
+import { Guess } from '../../lib/reactletypes'
 
 type Props = {
   onChar: (value: string) => void
   onDelete: () => void
   onEnter: () => void
   solution: string
-  guesses: string[]
+  guesses: Guess[]
   isRevealing?: boolean
 }
 

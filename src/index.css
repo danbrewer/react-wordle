@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --reveal-animation-speed: 350ms;
+  --reveal-animation-speed: 450ms;
   --animation-speed: 1000ms;
   --animation-speed-fast: 250ms;
   --default-cell-bg-color: theme('colors.white');
@@ -78,6 +78,29 @@
   animation-fill-mode: backwards;
 }
 
+.cell-reveal2 {
+  animation-duration: var(--reveal2-animation-speed);
+  animation-timing-function: linear;
+  animation-fill-mode: backwards;
+}
+
+.cell-reveal2.absent {
+  animation-name: revealAbsentCharCell;
+}
+
+.cell-reveal2.correct {
+  animation-name: revealCorrectCharCell;
+}
+
+.cell-reveal2.present {
+  animation-name: revealPresentCharCell;
+}
+
+.cell-reveal2 > .letter-container {
+  animation: offsetLetterFlip var(--reveal2-animation-speed) linear;
+  animation-fill-mode: backwards;
+}
+
 svg.cursor-pointer {
   transition: all var(--animation-speed-fast);
 }
@@ -108,7 +131,7 @@ svg.cursor-pointer:hover {
 
 @keyframes revealAbsentCharCell {
   0% {
-    transform: rotateX(0deg);
+    transform: scaleY(1);
     background-color: var(--default-cell-bg-color);
     border-color: var(--default-cell-border-color);
     color: var(--default-cell-text-color);
@@ -119,6 +142,7 @@ svg.cursor-pointer:hover {
     border-color: var(--default-cell-border-color);
     color: var(--default-cell-text-color);
     visibility: 0%;
+    transform: scaleY(0);
   }
   50.1% {
     background-color: var(--absent-cell-bg-color);
@@ -126,18 +150,19 @@ svg.cursor-pointer:hover {
     visibility: 100%;
   }
   100% {
-    transform: rotateX(180deg);
+    transform: scaleY(1);
   }
 }
 
 @keyframes revealCorrectCharCell {
   0% {
-    transform: rotateX(0deg);
+    transform: scaleY(1);
     background-color: var(--default-cell-bg-color);
     border-color: var(--default-cell-border-color);
     color: var(--default-cell-text-color);
   }
   50% {
+    transform: scaleY(0);
     background-color: var(--default-cell-bg-color);
     border-color: var(--default-cell-border-color);
     color: var(--default-cell-text-color);
@@ -147,13 +172,13 @@ svg.cursor-pointer:hover {
     border-color: var(--correct-cell-bg-color);
   }
   100% {
-    transform: rotateX(180deg);
+    transform: scaleY(1);
   }
 }
 
 @keyframes revealPresentCharCell {
   0% {
-    transform: rotateX(0deg);
+    transform: scaleY(1);
     background-color: var(--default-cell-bg-color);
     border-color: var(--default-cell-border-color);
     color: var(--default-cell-text-color);
@@ -162,23 +187,27 @@ svg.cursor-pointer:hover {
     background-color: var(--default-cell-bg-color);
     border-color: var(--default-cell-border-color);
     color: var(--default-cell-text-color);
+    transform: scaleY(0);
   }
   50.1% {
     background-color: var(--present-cell-bg-color);
     border-color: var(--present-cell-bg-color);
   }
   100% {
-    transform: rotateX(180deg);
+    transform: scaleY(1);
   }
 }
 
 /* Additional animation on the child div to avoid letters turning upside down/snapping back to upright visual glitch */
 @keyframes offsetLetterFlip {
   0% {
-    transform: rotateX(0deg);
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0);
   }
   100% {
-    transform: rotateX(180deg);
+    transform: scaleY(1);
   }
 }
 

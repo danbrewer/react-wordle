@@ -3,6 +3,7 @@ import { solutionIndex, unicodeSplit } from './words'
 import { GAME_TITLE } from '../constants/strings'
 import { MAX_CHALLENGES } from '../constants/settings'
 import { UAParser } from 'ua-parser-js'
+import { Guess } from './reactletypes'
 
 const webShareApiDeviceTypes: string[] = ['mobile', 'smarttv', 'wearable']
 const parser = new UAParser()
@@ -11,7 +12,7 @@ const device = parser.getDevice()
 
 export const shareStatus = (
   solution: string,
-  guesses: string[],
+  guesses: Guess[],
   lost: boolean,
   isHardMode: boolean,
   isDarkMode: boolean,
@@ -49,13 +50,13 @@ export const shareStatus = (
 
 export const generateEmojiGrid = (
   solution: string,
-  guesses: string[],
+  guesses: Guess[],
   tiles: string[]
 ) => {
   return guesses
     .map((guess) => {
-      const status = getGuessStatuses(solution, guess)
-      const splitGuess = unicodeSplit(guess)
+      const status = getGuessStatuses(solution, guess.value)
+      const splitGuess = unicodeSplit(guess.value)
 
       return splitGuess
         .map((_, i) => {
