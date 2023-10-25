@@ -1,9 +1,19 @@
+import { Guess } from "../components/types/guess"
+
 const gameStateKey = 'gameState'
+const gameStateKey2 = 'gameState2'
 const highContrastKey = 'highContrast'
 
 type StoredGameState = {
-  guesses: string[]
-  solution: string
+  guesses: Guess[]
+}
+
+type StoredGameState2 = {
+  dictionary: {[key: number]: Guess}
+}
+
+export const saveGameStateToLocalStorage2 = (gameState2: StoredGameState2) => {
+  localStorage.setItem(gameStateKey2, JSON.stringify(gameState2))
 }
 
 export const saveGameStateToLocalStorage = (gameState: StoredGameState) => {
@@ -13,6 +23,11 @@ export const saveGameStateToLocalStorage = (gameState: StoredGameState) => {
 export const loadGameStateFromLocalStorage = () => {
   const state = localStorage.getItem(gameStateKey)
   return state ? (JSON.parse(state) as StoredGameState) : null
+}
+
+export const loadGameStateFromLocalStorage2 = () => {
+  const state = localStorage.getItem(gameStateKey2)
+  return state ? (JSON.parse(state) as StoredGameState2) : null
 }
 
 const gameStatKey = 'gameStats'

@@ -1,6 +1,6 @@
 import { Cell } from './Cell'
 import { solution, unicodeSplit } from '../../lib/words'
-import { Guess } from '../../lib/reactletypes'
+import { Guess } from '../types/guess'
 
 type Props = {
   guess: Guess
@@ -22,7 +22,7 @@ export const CurrentRow = ({
       {splitGuess.map((letter, i) =>{ 
         console.log(`CurrentRow: ${letter}`)
         return(
-        <Cell key={i} value={letter} row={row} />
+        <Cell key={i} value={letter} row={row} completedRow={false} />
       )})}
       {emptyCells.map((_, i) => (
         <Cell key={i} />

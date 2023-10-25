@@ -1,12 +1,12 @@
-import { Guess } from './reactletypes'
+import { Guess } from '../components/types/guess'
 import { generateEmojiGrid } from './share'
 
 describe('generateEmojiGrid', () => {
   test('generates grid for ascii', () => {
     const guesses : Guess[] = [
-      {value:'EDCBA', isNew: false},
-      {value:'VWXYZ', isNew: false},
-      {value: 'ABCDE', isNew: false}]
+      {value:'EDCBA', isNew: false, state: '00000', guessStates: {}},
+      {value:'VWXYZ', isNew: false, state: '00000', guessStates: {}},
+      {value: 'ABCDE', isNew: false, state: '00000', guessStates: {}}]
     const tiles = ['C', 'P', 'A'] // Correct, Present, Absemt
 
     const grid = generateEmojiGrid('ABCDE', guesses, tiles)
@@ -17,9 +17,9 @@ describe('generateEmojiGrid', () => {
   })
   test('generates grid for emoji', () => {
     const guesses : Guess[] =  [
-      {value:'5️⃣4️⃣3️⃣2️⃣1️⃣', isNew:false}, 
-      {value:'♠️♥️♦️♣️🔔', isNew: false},
-      {value: '1️⃣2️⃣3️⃣4️⃣5️⃣', isNew: false}]
+      {value:'5️⃣4️⃣3️⃣2️⃣1️⃣', isNew:false, state: '00000', guessStates: {}}, 
+      {value:'♠️♥️♦️♣️🔔', isNew: false, state: '00000', guessStates: {}},
+      {value: '1️⃣2️⃣3️⃣4️⃣5️⃣', isNew: false, state: '00000', guessStates: {}}]
     const tiles = ['C', 'P', 'A'] // Correct, Present, Absemt
 
     const grid = generateEmojiGrid('1️⃣2️⃣3️⃣4️⃣5️⃣', guesses, tiles)

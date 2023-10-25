@@ -4,13 +4,14 @@ import './index.css'
 import App from './App'
 // import reportWebVitals from './reportWebVitals'
 import { AlertProvider } from './context/AlertContext'
-import { CompletedRowTest } from './components/benchtops/CompletedRowTest'
+import { GuessProvider } from './context/GameStateContext'
 
 ReactDOM.render(
   <React.StrictMode>
     <AlertProvider>
-      <App />
-      {/* <CompletedRowTest></CompletedRowTest> */}
+      <GuessProvider>
+        <App />
+      </GuessProvider>
     </AlertProvider>
   </React.StrictMode>,
   document.getElementById('root')

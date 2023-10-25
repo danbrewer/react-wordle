@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Guess } from '../../lib/reactletypes'
+import { Guess } from '../types/guess'
 import { CompletedRow } from '../grid/CompletedRow'
 
   
@@ -13,7 +13,9 @@ import { CompletedRow } from '../grid/CompletedRow'
 
     const guess : Guess = {
       value: "CLAIM",
-      isNew: true
+      isNew: true,
+      state: '00000', 
+      guessStates: {}
     }
 
     return (

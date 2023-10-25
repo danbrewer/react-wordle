@@ -23,14 +23,8 @@ export const CellCurrent = ({
 }: Props) => {
   const isFilled = value && !isCompleted
   const revealTime = isRevealing ? REVEAL_TIME_MS : LOADING_REVEAL_TIME_MS
-  const shouldReveal = isRevealing || isCompleted
   const animationDelay =  `${(position * 100) + revealTime + row * 100}ms`
   const isHighContrast = getStoredIsHighContrastMode()
-
-  // console.log(`value: ${value} isRevealing:${isRevealing} isCompleted: ${isCompleted}`)
-
-  // document.documentElement.style.setProperty('--reveal-animation-speed', `${revealTime}ms`);
-  // document.documentElement.style.setProperty('--reveal-animation-speed', `${revealTime}ms`);
 
   const classes = classnames(
     'w-14 h-14 border-solid border-2 flex items-center justify-center mx-0.5 text-4xl font-bold  dark:text-white',

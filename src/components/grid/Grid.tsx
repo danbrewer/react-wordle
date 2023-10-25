@@ -1,5 +1,5 @@
 import { MAX_CHALLENGES } from '../../constants/settings'
-import { Guess } from '../../lib/reactletypes'
+import { Guess } from '../types/guess'
 import { CompletedRow } from './CompletedRow'
 import { CurrentRow } from './CurrentRow'
 import { EmptyRow } from './EmptyRow'

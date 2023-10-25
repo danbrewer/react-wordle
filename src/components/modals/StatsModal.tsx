@@ -11,7 +11,7 @@ import {
   NEW_WORD_TEXT,
   SHARE_TEXT,
 } from '../../constants/strings'
-import { Guess } from '../../lib/reactletypes'
+import { Guess } from '../types/guess'
 
 type Props = {
   isOpen: boolean

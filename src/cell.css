@@ -1,0 +1,131 @@
+.cell-fill-animation {
+  animation: onTypeCell linear;
+  animation-duration: var(--reveal-animation-speed);
+}
+
+.cell-reveal {
+  animation-duration: var(--reveal-animation-speed);
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+.cell-reveal.absent {
+  animation-name: revealAbsentCharCell;
+}
+
+.cell-reveal.correct {
+  animation-name: revealCorrectCharCell;
+}
+
+.cell-reveal.present {
+  animation-name: revealPresentCharCell;
+}
+
+.cell-reveal > .letter-container {
+  animation: offsetLetterFlip var(--reveal-animation-speed) linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes revealAbsentCharCell {
+  0% {
+    transform: scaleY(1);
+    /* background-color: var(--default-cell-bg-color); */
+    border-color: var(--default-cell-border-color);
+    color: var(--default-cell-text-color);
+    visibility: 0%;
+  }
+  50% {
+    /* background-color: var(--default-cell-bg-color); */
+    border-color: var(--default-cell-border-color);
+    color: var(--default-cell-text-color);
+    visibility: 0%;
+    transform: scaleY(0);
+  }
+  50.1% {
+    /* background-color: var(--absent-cell-bg-color); */
+    border-color: var(--absent-cell-bg-color);
+    color: var(--default-cell-text-color);
+  }
+  100% {
+    transform: scaleY(1);
+    background-color: var(--absent-cell-bg-color);
+    visibility: 100%;
+  }
+}
+
+@keyframes revealCorrectCharCell {
+  0% {
+    transform: scaleY(1);
+    /* background-color: var(--default-cell-bg-color); */
+    border-color: var(--default-cell-border-color);
+    color: var(--default-cell-text-color);
+  }
+  50% {
+    transform: scaleY(0);
+    /* background-color: var(--default-cell-bg-color); */
+    border-color: var(--default-cell-border-color);
+    color: var(--default-cell-text-color);
+  }
+  50.1% {
+    /* background-color: var(--correct-cell-bg-color); */
+    border-color: var(--correct-cell-bg-color);
+  }
+  100% {
+    transform: scaleY(1);
+    background-color: var(--correct-cell-bg-color);
+  }
+}
+
+@keyframes revealPresentCharCell {
+  0% {
+    transform: scaleY(1);
+    /* background-color: var(--default-cell-bg-color); */
+    border-color: var(--default-cell-border-color);
+    color: var(--default-cell-text-color);
+  }
+  50% {
+    /* background-color: var(--default-cell-bg-color); */
+    border-color: var(--default-cell-border-color);
+    color: var(--default-cell-text-color);
+    transform: scaleY(0);
+  }
+  50.1% {
+    /* background-color: var(--present-cell-bg-color); */
+    border-color: var(--present-cell-bg-color);
+  }
+  100% {
+    transform: scaleY(1);
+    background-color: var(--present-cell-bg-color);
+  }
+}
+
+/* Additional animation on the child div to avoid letters turning upside down/snapping back to upright visual glitch */
+@keyframes offsetLetterFlip {
+  0% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes onTypeCell {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.shadowed {
+  text-shadow: 1px 1px 1px #000000;
+}

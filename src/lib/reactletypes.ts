@@ -3,7 +3,3 @@ export type StoredGameState = {
     solution: string
 }
 
-export type Guess = {
-    value: string,
-    isNew?: boolean
-}

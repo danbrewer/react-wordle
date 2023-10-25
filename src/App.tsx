@@ -1,119 +1,49 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { Grid } from './components/grid/Grid'
 import { Keyboard } from './components/keyboard/Keyboard'
-// import { InfoModal } from './components/modals/InfoModal'
-// import { StatsModal } from './components/modals/StatsModal'
-// import { SettingsModal } from './components/modals/SettingsModal'
-// import { createGlobalStyle } from 'styled-components'
 
 import {
-  // WIN_MESSAGES,
-  // GAME_COPIED_MESSAGE,
   NOT_ENOUGH_LETTERS_MESSAGE,
   WORD_NOT_FOUND_MESSAGE,
-  CORRECT_WORD_MESSAGE,
-  HARD_MODE_ALERT_MESSAGE,
   DISCOURAGE_INAPP_BROWSER_TEXT,
 } from './constants/strings'
-import {
-  MAX_CHALLENGES,
-  REVEAL_TIME_MS,
-  // WELCOME_INFO_MODAL_MS,
-  DISCOURAGE_INAPP_BROWSERS,
-} from './constants/settings'
-import {
-  isWordInWordList,
-  isWinningWord,
-  solution,
-  findFirstUnusedReveal,
-  unicodeLength,
-} from './lib/words'
-import { addStatsForCompletedGame, loadStats } from './lib/stats'
+import { MAX_CHALLENGES, DISCOURAGE_INAPP_BROWSERS } from './constants/settings'
+import { isWordInWordList, solution, unicodeLength } from './lib/words'
 import {
   loadGameStateFromLocalStorage,
+  loadGameStateFromLocalStorage2,
   saveGameStateToLocalStorage,
-  setStoredIsHighContrastMode,
-  getStoredIsHighContrastMode,
+  saveGameStateToLocalStorage2,
 } from './lib/localStorage'
 import { default as GraphemeSplitter } from 'grapheme-splitter'
 
 import './App.css'
-// import { AlertContainer } from './components/alerts/AlertContainer'
+import './cell.css'
 import { useAlert } from './context/AlertContext'
-// import { Navbar } from './components/navbar/Navbar'
 import { isInAppBrowser } from './lib/browser'
-import { Guess, StoredGameState } from './lib/reactletypes'
-
-// const GlobalStyles = createGlobalStyle`
-//   html {
-//     --reveal-animation-speed: 350ms;
-//     }
-//   }
-// `
-
+import { Guess } from './components/types/guess'
+import { GuessContext, GuessProvider } from './context/GameStateContext'
 function App() {
-  const prefersDarkMode = window.matchMedia(
-    '(prefers-color-scheme: dark)'
-  ).matches
+  const { showError: showErrorAlert } = useAlert()
 
-  const { showError: showErrorAlert, showSuccess: showSuccessAlert } =
-    useAlert()
+  const gameStateContext = useContext(GuessContext)
+
   const [currentGuess, setCurrentGuess] = useState<Guess>({
     value: '',
     isNew: true,
+    state: '',
+    guessStates: {},
   })
-  const [isGameWon, setIsGameWon] = useState(false)
-  // const [isInfoModalOpen, setIsInfoModalOpen] = useState(false)
-  // const [isStatsModalOpen, setIsStatsModalOpen] = useState(false)
-  // const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
+
   const [currentRowClass, setCurrentRowClass] = useState('')
-  const [isGameLost, setIsGameLost] = useState(false)
-  const [isDarkMode, setIsDarkMode] = useState(
-    localStorage.getItem('theme')
-      ? localStorage.getItem('theme') === 'dark'
-      : prefersDarkMode
-      ? true
-      : false
-  )
-  const [isHighContrastMode, setIsHighContrastMode] = useState(
-    false // getStoredIsHighContrastMode()
-  )
-  // const [isRevealing, setIsRevealing] = useState(false)
   const [guesses, setGuesses] = useState<Guess[]>(() => {
-    const loaded = loadGameStateFromLocalStorage()
-    if (loaded?.solution !== solution) {
-      return []
-    }
-    const gameWasWon = loaded.guesses.some((g) => g === solution)
-    if (gameWasWon) {
-      setIsGameWon(true)
-    }
-    if (loaded.guesses.length === MAX_CHALLENGES && !gameWasWon) {
-      setIsGameLost(true)
-      showErrorAlert(CORRECT_WORD_MESSAGE(solution), {
-        persist: true,
-      })
-    }
-    // this is how you cast a mapped array to a Typescript type
-    return loaded.guesses.map((g) => ({ value: g } as Guess))
+    const storedGameState = loadGameStateFromLocalStorage()
+    return storedGameState?.guesses ?? []
   })
 
-  // const [stats, setStats] = useState(() => loadStats())
-
-  // const [isHardMode, setIsHardMode] = useState(
-  //   localStorage.getItem('gameMode')
-  //     ? localStorage.getItem('gameMode') === 'hard'
-  //     : false
-  // )
-
-  // useEffect(() => {
-  //   // if no game state on load,
-  //   // show the user the how-to info modal
-  //   if (!loadGameStateFromLocalStorage()) {
-  //     setTimeout(() => {
-  //       setIsInfoModalOpen(true)
-  //     }, WELCOME_INFO_MODAL_MS)
-  //   }
+  //   const [dictionary, setDictionary] = useState<{[key: number]: Guess}>(() => {
+  //   const storedGameState2 = loadGameStateFromLocalStorage2()
+  //   return storedGameState2?.dictionary ?? [];
   // })
 
   useEffect(() => {
@@ -126,73 +56,45 @@ function App() {
   }, [showErrorAlert])
 
   useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
-
-    if (isHighContrastMode) {
-      document.documentElement.classList.add('high-contrast')
-    } else {
-      document.documentElement.classList.remove('high-contrast')
-    }
-  }, [isDarkMode, isHighContrastMode])
-
-  const handleDarkMode = (isDark: boolean) => {
-    setIsDarkMode(isDark)
-    localStorage.setItem('theme', isDark ? 'dark' : 'light')
-  }
-
-  const handleHardMode = (isHard: boolean) => {
-    if (guesses.length === 0 || localStorage.getItem('gameMode') === 'hard') {
-      // setIsHardMode(isHard)
-      localStorage.setItem('gameMode', isHard ? 'hard' : 'normal')
-    } else {
-      showErrorAlert(HARD_MODE_ALERT_MESSAGE)
-    }
-  }
-
-  const handleHighContrastMode = (isHighContrast: boolean) => {
-    setIsHighContrastMode(isHighContrast)
-    setStoredIsHighContrastMode(isHighContrast)
-  }
+    document.documentElement.classList.remove('dark')
+    document.documentElement.classList.remove('high-contrast')
+  })
 
   const clearCurrentRowClass = () => {
     setCurrentRowClass('')
   }
 
   useEffect(() => {
-    const guessValues = guesses.map((g) => g.value)
-    saveGameStateToLocalStorage({ guesses: guessValues, solution })
-  }, [guesses])
+    saveGameStateToLocalStorage({ guesses })
 
-  // useEffect(() => {
-  //   if (isGameWon) {
-  //     const winMessage =
-  //       WIN_MESSAGES[Math.floor(Math.random() * WIN_MESSAGES.length)]
-  //     const delayMs = REVEAL_TIME_MS * solution.length
+    // Create a new dictionary object and assign it the contents of gameStateContext.dictionary
+    const newDictionary: { [key: number]: Guess } =
+      { ...gameStateContext?.dictionary } ?? {}
 
-  //     showSuccessAlert(winMessage, {
-  //       delayMs,
-  //       onClose: () => setIsStatsModalOpen(true),
-  //     })
-  //   }
+    guesses.map((guess, index) => {
+      if (newDictionary[index]) {
+        // Check if newDictionary[index] is defined
+        newDictionary[index].value = guess.value
+      }
+    })
 
-  //   if (isGameLost) {
-  //     setTimeout(() => {
-  //       setIsStatsModalOpen(true)
-  //     }, (solution.length + 1) * REVEAL_TIME_MS)
-  //   }
-  // }, [isGameWon, isGameLost, showSuccessAlert])
+    // saveGameStateToLocalStorage2({dictionary: newDictionary});
+
+    gameStateContext?.setDictionary(newDictionary)
+    // saveGameStateToLocalStorage2({guesses});
+  }, [guesses, gameStateContext])
 
   const onChar = (value: string) => {
     if (
       unicodeLength(`${currentGuess.value}${value}`) <= solution.length &&
-      guesses.length < MAX_CHALLENGES &&
-      !isGameWon
+      guesses.length < MAX_CHALLENGES
     ) {
-      setCurrentGuess({ value: `${currentGuess.value}${value}`, isNew: true })
+      setCurrentGuess({
+        value: `${currentGuess.value}${value}`,
+        isNew: true,
+        state: '00000',
+        guessStates: {},
+      })
     }
   }
 
@@ -207,11 +109,6 @@ function App() {
   }
 
   const onEnter = () => {
-    console.log(`KEYBOARD ENTER`)
-    if (isGameWon || isGameLost) {
-      return
-    }
-
     if (!(unicodeLength(currentGuess.value) === solution.length)) {
       setCurrentRowClass('jiggle')
       return showErrorAlert(NOT_ENOUGH_LETTERS_MESSAGE, {
@@ -226,113 +123,42 @@ function App() {
       })
     }
 
-    // enforce hard mode - all guesses must contain all previously revealed letters
-    // if (isHardMode) {
-    //   const firstMissingReveal = findFirstUnusedReveal(currentGuess, guesses)
-    //   if (firstMissingReveal) {
-    //     setCurrentRowClass('jiggle')
-    //     return showErrorAlert(firstMissingReveal, {
-    //       onClose: clearCurrentRowClass,
-    //     })
-    //   }
-    // }
-
-    const winningWord = isWinningWord(currentGuess.value)
-
     if (
       unicodeLength(currentGuess.value) === solution.length &&
-      guesses.length < MAX_CHALLENGES &&
-      !isGameWon
+      guesses.length < MAX_CHALLENGES
     ) {
+      currentGuess.isNew = false
       setGuesses([...guesses, currentGuess])
-      setCurrentGuess({ value: '', isNew: true })
-
-      if (winningWord) {
-        // setStats(addStatsForCompletedGame(stats, guesses.length))
-        return setIsGameWon(true)
-      }
-
-      if (guesses.length === MAX_CHALLENGES - 1) {
-        // setStats(addStatsForCompletedGame(stats, guesses.length + 1))
-        setIsGameLost(true)
-        showErrorAlert(CORRECT_WORD_MESSAGE(solution), {
-          persist: true,
-          delayMs: REVEAL_TIME_MS * solution.length + 1,
-        })
-      }
+      // setDictionary({...dictionary, [guesses.length]: currentGuess});
+      setCurrentGuess({
+        value: '',
+        isNew: true,
+        state: '00000',
+        guessStates: {},
+      })
     }
   }
 
-  // useEffect(()=>{
-
-  //   setIsLoading(true)
-  //   // console.log(`loading: ${isLoading}`);
-  //   // turn this back off after all
-  //   // chars have been revealed
-  //   setTimeout(() => {
-  //     setIsLoading(false);
-  //     console.log(`loading: ${isLoading}`);
-  //   }, LOADING_REVEAL_TIME_MS * solution.length)
-
-  //   }, [isLoading])
-
   return (
-    <>
-      {/* <GlobalStyles /> */}
-      <div className="h-screen flex flex-col">
-        {/* <Navbar
-          setIsInfoModalOpen={setIsInfoModalOpen}
-          setIsStatsModalOpen={setIsStatsModalOpen}
-          setIsSettingsModalOpen={setIsSettingsModalOpen}
-        /> */}
-        <div className="pt-2 px-1 pb-8 md:max-w-7xl w-full mx-auto sm:px-6 lg:px-8 flex flex-col grow">
-          <div className="pb-6 grow">
-            <Grid
-              solution={solution}
-              guesses={guesses}
-              currentGuess={currentGuess}
-              currentRowClassName={currentRowClass}
-            />
-          </div>
-          <Keyboard
-            onChar={onChar}
-            onDelete={onDelete}
-            onEnter={onEnter}
+    <div className="h-screen flex flex-col">
+      <div className="pt-2 px-1 pb-8 md:max-w-7xl w-full mx-auto sm:px-6 lg:px-8 flex flex-col grow">
+        <div className="pb-6 grow">
+          <Grid
             solution={solution}
             guesses={guesses}
+            currentGuess={currentGuess}
+            currentRowClassName={currentRowClass}
           />
-          {/* <InfoModal
-            isOpen={isInfoModalOpen}
-            handleClose={() => setIsInfoModalOpen(false)}
-          />
-          <StatsModal
-            isOpen={isStatsModalOpen}
-            handleClose={() => setIsStatsModalOpen(false)}
-            solution={solution}
-            guesses={guesses}
-            gameStats={stats}
-            isGameLost={isGameLost}
-            isGameWon={isGameWon}
-            handleShareToClipboard={() => showSuccessAlert(GAME_COPIED_MESSAGE)}
-            isHardMode={isHardMode}
-            isDarkMode={isDarkMode}
-            isHighContrastMode={isHighContrastMode}
-            numberOfGuessesMade={guesses.length}
-          />
-          <SettingsModal
-            isOpen={isSettingsModalOpen}
-            handleClose={() => setIsSettingsModalOpen(false)}
-            isHardMode={isHardMode}
-            handleHardMode={handleHardMode}
-            isDarkMode={isDarkMode}
-            handleDarkMode={handleDarkMode}
-            isHighContrastMode={isHighContrastMode}
-            handleHighContrastMode={handleHighContrastMode}
-          />
-          <AlertContainer /> */}
         </div>
+        <Keyboard
+          onChar={onChar}
+          onDelete={onDelete}
+          onEnter={onEnter}
+          solution={solution}
+          guesses={guesses}
+        />
       </div>
-    </>
+    </div>
   )
 }
 

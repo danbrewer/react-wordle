@@ -6,12 +6,12 @@ This is a clone project of the popular word guessing game we all know and love. 
 
 ## Build and run
 
-### To Run Locally:
+### To Run Locally
 
 Clone the repository and perform the following command line actions:
 
 ```bash
-$> cd react-wordle
+$> cd react-wordle-guesser
 $> npm install
 $> npm run start
 ```

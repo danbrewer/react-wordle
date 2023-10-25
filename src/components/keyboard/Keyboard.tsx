@@ -3,7 +3,7 @@ import { Key } from './Key'
 import { useEffect } from 'react'
 import { ENTER_TEXT, DELETE_TEXT } from '../../constants/strings'
 import { localeAwareUpperCase } from '../../lib/words'
-import { Guess } from '../../lib/reactletypes'
+import { Guess } from '../types/guess'
 
 type Props = {
   onChar: (value: string) => void

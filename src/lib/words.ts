@@ -3,7 +3,7 @@ import { VALID_GUESSES } from '../constants/validGuesses'
 import { WRONG_SPOT_MESSAGE, NOT_CONTAINED_MESSAGE } from '../constants/strings'
 import { getGuessStatuses } from './statuses'
 import { default as GraphemeSplitter } from 'grapheme-splitter'
-import { Guess } from './reactletypes'
+import { Guess } from '../components/types/guess'
 
 export const isWordInWordList = (word: string) => {
   return (
@@ -26,7 +26,7 @@ export const findFirstUnusedReveal = (word: Guess, guesses: Guess[]) => {
 
   const lettersLeftArray = new Array<string>()
   const guess = guesses[guesses.length - 1]
-  const statuses = getGuessStatuses(solution, guess.value)
+  const statuses = getGuessStatuses(guess)
   const splitWord = unicodeSplit(word.value)
   const splitGuess = unicodeSplit(guess.value)
 

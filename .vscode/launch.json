@@ -16,7 +16,7 @@
             "name": "Attach to Chrome",
             "port": 9222,
             "request": "attach",
-            "type": "pwa-chrome",
+            "type": "chrome",
             "url": "http://localhost:3000",
             "urlFilter": "http://localhost:3000/*", // use urlFilter instead of url!
             "webRoot": "${workspaceFolder}",
