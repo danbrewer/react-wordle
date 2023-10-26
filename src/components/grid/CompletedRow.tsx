@@ -23,7 +23,10 @@ export const CompletedRow = ({
     <div className="flex justify-center mb-1">
       {splitGuess.map((letter, i) => 
       {
-        console.log(`CompletedRow: ${letter}`)
+        console.log(`CompletedRow: ${
+          JSON.stringify(
+            { letter, 
+              index: i})}`)
       return (
         <Cell
           key={i}
@@ -32,6 +35,7 @@ export const CompletedRow = ({
           position={i}
           isRevealing={guess.isNew}// guess.isNew}
           row={row}
+
         />
       )})}
     </div>

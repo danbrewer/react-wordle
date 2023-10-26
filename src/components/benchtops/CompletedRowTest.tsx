@@ -14,8 +14,7 @@ import { CompletedRow } from '../grid/CompletedRow'
     const guess : Guess = {
       value: "CLAIM",
       isNew: true,
-      state: '00000', 
-      guessStates: {}
+      state: '00000'
     }
 
     return (

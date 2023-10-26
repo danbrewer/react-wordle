@@ -22,7 +22,7 @@ import './cell.css'
 import { useAlert } from './context/AlertContext'
 import { isInAppBrowser } from './lib/browser'
 import { Guess } from './components/types/guess'
-import { GuessContext, GuessProvider } from './context/GameStateContext'
+import { GuessContext } from './context/GameStateContext'
 function App() {
   const { showError: showErrorAlert } = useAlert()
 
@@ -32,7 +32,6 @@ function App() {
     value: '',
     isNew: true,
     state: '',
-    guessStates: {},
   })
 
   const [currentRowClass, setCurrentRowClass] = useState('')
@@ -55,6 +54,7 @@ function App() {
       })
   }, [showErrorAlert])
 
+  // startup effect handlers
   useEffect(() => {
     document.documentElement.classList.remove('dark')
     document.documentElement.classList.remove('high-contrast')
@@ -64,26 +64,12 @@ function App() {
     setCurrentRowClass('')
   }
 
+  // when guesses changes save it away to locals storage
   useEffect(() => {
     saveGameStateToLocalStorage({ guesses })
+  }, [guesses])
 
-    // Create a new dictionary object and assign it the contents of gameStateContext.dictionary
-    const newDictionary: { [key: number]: Guess } =
-      { ...gameStateContext?.dictionary } ?? {}
-
-    guesses.map((guess, index) => {
-      if (newDictionary[index]) {
-        // Check if newDictionary[index] is defined
-        newDictionary[index].value = guess.value
-      }
-    })
-
-    // saveGameStateToLocalStorage2({dictionary: newDictionary});
-
-    gameStateContext?.setDictionary(newDictionary)
-    // saveGameStateToLocalStorage2({guesses});
-  }, [guesses, gameStateContext])
-
+  // keystroke handlers
   const onChar = (value: string) => {
     if (
       unicodeLength(`${currentGuess.value}${value}`) <= solution.length &&
@@ -93,7 +79,6 @@ function App() {
         value: `${currentGuess.value}${value}`,
         isNew: true,
         state: '00000',
-        guessStates: {},
       })
     }
   }
@@ -109,6 +94,7 @@ function App() {
   }
 
   const onEnter = () => {
+    // validate that 5 letters were entered; bail out if validation fails
     if (!(unicodeLength(currentGuess.value) === solution.length)) {
       setCurrentRowClass('jiggle')
       return showErrorAlert(NOT_ENOUGH_LETTERS_MESSAGE, {
@@ -116,6 +102,7 @@ function App() {
       })
     }
 
+    // bail out if the guessed word isn't in the dictionary
     if (!isWordInWordList(currentGuess.value)) {
       setCurrentRowClass('jiggle')
       return showErrorAlert(WORD_NOT_FOUND_MESSAGE, {
@@ -123,18 +110,34 @@ function App() {
       })
     }
 
+    // only allow the word if there are still guess slots available
     if (
       unicodeLength(currentGuess.value) === solution.length &&
       guesses.length < MAX_CHALLENGES
     ) {
+      // set the current guess as not new...
       currentGuess.isNew = false
+      // ...and save all the guesses to local storage
       setGuesses([...guesses, currentGuess])
-      // setDictionary({...dictionary, [guesses.length]: currentGuess});
+
+      // load the guesses from gameStateContext
+      // let dict = gameStateContext?.dictionary ?? {};;
+      // dict[0] = currentGuess;
+
+      if (gameStateContext != null) {
+        const dictionary = { ...gameStateContext.dictionary }
+        // let dictionary =  gameStateContext.dictionary;
+        dictionary[guesses.length] = currentGuess
+        gameStateContext.setDictionary(dictionary)
+
+        saveGameStateToLocalStorage2({ guesses: dictionary })
+      }
+
+      // initialize the next guess
       setCurrentGuess({
         value: '',
         isNew: true,
         state: '00000',
-        guessStates: {},
       })
     }
   }

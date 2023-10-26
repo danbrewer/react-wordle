@@ -88,10 +88,20 @@ useEffect(()=>{
       return
     }
     let newStatus = currentStatus;
+    let newState = '';
     switch(currentStatus) {
-      case 'absent': newStatus = 'correct'; break;
-      case 'correct': newStatus ='present'; break;
-      case 'present': newStatus ='absent'; break;
+      case 'absent': 
+        newStatus = 'correct'; 
+        newState = '2';
+        break;
+      case 'present': 
+        newStatus ='absent'; 
+        newState = '0';
+        break;
+      case 'correct': 
+        newStatus ='present'; 
+        newState = '1';
+        break;
     }
     console.log({currentStatus, newStatus})
     setCurrentStatus(newStatus);
@@ -100,19 +110,20 @@ useEffect(()=>{
     // update the gameStateContext using the key
     const newDictionary = {...gameStateContext?.dictionary};
     const newGuess = {...newDictionary[key]};
-    newGuess.state = '00000';
 
-    // check newGuess.guessStates exists
-    if (!newGuess.guessStates){
-      newGuess.guessStates = {};
+
+
+    if (!newGuess.state)
+    {
+      newGuess.state = '00000';
     }
-    // check guessStates at position and create a new one if necessary
-    if (!newGuess.guessStates[position]){
-      newGuess.guessStates[position] = '';
-    }
+
+
    
-    newGuess.guessStates[position] = newStatus;
     newDictionary[key] = newGuess;
+
+    newGuess.state = `${newGuess.state.slice(0, position)}${newState}${newGuess.state.slice(position + 1)}`;
+    
     gameStateContext?.setDictionary(newDictionary);
 
   }

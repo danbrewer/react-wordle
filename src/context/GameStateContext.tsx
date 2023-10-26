@@ -7,7 +7,7 @@ import {
   useState,
 } from 'react'
 import { Guess } from '../components/types/guess'
-import { loadGameStateFromLocalStorage2, saveGameStateToLocalStorage, saveGameStateToLocalStorage2 } from '../lib/localStorage'
+import { loadGameStateFromLocalStorage2, saveGameStateToLocalStorage2 } from '../lib/localStorage'
 
 
 
@@ -16,10 +16,6 @@ type GuessContextData = {
   setDictionary: (value: { [key: number]: Guess }) => void
 }
 
-// type GuessContextData2 = {
-//   dictionary: { [key: number]: Guess },
-//   setDictionary: (value: { [key: number]: Guess }) => void
-// }
 
 export const GuessContext = createContext<GuessContextData | null>({
   dictionary: {},
@@ -39,15 +35,23 @@ type Props = {
 
 export const GuessProvider = ({ children }: Props) => {
 
-  const [dictionary, setDictionary] = useState(loadGameStateFromLocalStorage2() || {})
+  // the dictionary that will be shared with other components
+  const [dictionary, setDictionary] = useState<{[key: number]: Guess}>(()=>
+{
+    const storedGameState = loadGameStateFromLocalStorage2()
+    return storedGameState?.guesses ?? {}
+});
+    // loadGameStateFromLocalStorage2() || {})
 
   // when the dictionary changes, save it to local storage
   useEffect(() => {
-    saveGameStateToLocalStorage2({ dictionary })
+    saveGameStateToLocalStorage2({ guesses: dictionary })
   }, [dictionary])
 
+  // cache the dictionary to prevent dependent components from re-rendering
+  // note that "value" is going to be injected into the <GuessContext.Provider> in the JSX
   const value = useMemo(
-    () => ({ dictionary, setDictionary }), 
+    () => ({ dictionary: dictionary, setDictionary }), 
     [dictionary]
   );
 
