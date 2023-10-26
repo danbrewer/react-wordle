@@ -11,9 +11,7 @@ import { MAX_CHALLENGES, DISCOURAGE_INAPP_BROWSERS } from './constants/settings'
 import { isWordInWordList, solution, unicodeLength } from './lib/words'
 import {
   loadGameStateFromLocalStorage,
-  loadGameStateFromLocalStorage2,
   saveGameStateToLocalStorage,
-  saveGameStateToLocalStorage2,
 } from './lib/localStorage'
 import { default as GraphemeSplitter } from 'grapheme-splitter'
 
@@ -126,11 +124,8 @@ function App() {
 
       if (gameStateContext != null) {
         const dictionary = { ...gameStateContext.dictionary }
-        // let dictionary =  gameStateContext.dictionary;
         dictionary[guesses.length] = currentGuess
         gameStateContext.setDictionary(dictionary)
-
-        saveGameStateToLocalStorage2({ guesses: dictionary })
       }
 
       // initialize the next guess
@@ -142,13 +137,16 @@ function App() {
     }
   }
 
+  const newGuesses =
+    gameStateContext == null ? [] : Object.values(gameStateContext?.dictionary) // gameStateContext?.dictionary
+
   return (
     <div className="h-screen flex flex-col">
       <div className="pt-2 px-1 pb-8 md:max-w-7xl w-full mx-auto sm:px-6 lg:px-8 flex flex-col grow">
         <div className="pb-6 grow">
           <Grid
             solution={solution}
-            guesses={guesses}
+            guesses={newGuesses} // guesses}
             currentGuess={currentGuess}
             currentRowClassName={currentRowClass}
           />
