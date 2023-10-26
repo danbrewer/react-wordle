@@ -9,10 +9,6 @@ import {
 } from './constants/strings'
 import { MAX_CHALLENGES, DISCOURAGE_INAPP_BROWSERS } from './constants/settings'
 import { isWordInWordList, solution, unicodeLength } from './lib/words'
-import {
-  loadGameStateFromLocalStorage,
-  saveGameStateToLocalStorage,
-} from './lib/localStorage'
 import { default as GraphemeSplitter } from 'grapheme-splitter'
 
 import './App.css'
@@ -33,10 +29,6 @@ function App() {
   })
 
   const [currentRowClass, setCurrentRowClass] = useState('')
-  const [guesses, setGuesses] = useState<Guess[]>(() => {
-    const storedGameState = loadGameStateFromLocalStorage()
-    return storedGameState?.guesses ?? []
-  })
 
   //   const [dictionary, setDictionary] = useState<{[key: number]: Guess}>(() => {
   //   const storedGameState2 = loadGameStateFromLocalStorage2()
@@ -62,13 +54,13 @@ function App() {
     setCurrentRowClass('')
   }
 
-  // when guesses changes save it away to locals storage
-  useEffect(() => {
-    saveGameStateToLocalStorage({ guesses })
-  }, [guesses])
-
   // keystroke handlers
   const onChar = (value: string) => {
+    const guesses =
+      gameStateContext == null
+        ? []
+        : Object.values(gameStateContext?.dictionary)
+
     if (
       unicodeLength(`${currentGuess.value}${value}`) <= solution.length &&
       guesses.length < MAX_CHALLENGES
@@ -92,6 +84,11 @@ function App() {
   }
 
   const onEnter = () => {
+    const guesses =
+      gameStateContext == null
+        ? []
+        : Object.values(gameStateContext?.dictionary)
+
     // validate that 5 letters were entered; bail out if validation fails
     if (!(unicodeLength(currentGuess.value) === solution.length)) {
       setCurrentRowClass('jiggle')
@@ -116,7 +113,7 @@ function App() {
       // set the current guess as not new...
       currentGuess.isNew = false
       // ...and save all the guesses to local storage
-      setGuesses([...guesses, currentGuess])
+      // setGuesses([...guesses, currentGuess])
 
       // load the guesses from gameStateContext
       // let dict = gameStateContext?.dictionary ?? {};;
@@ -156,7 +153,7 @@ function App() {
           onDelete={onDelete}
           onEnter={onEnter}
           solution={solution}
-          guesses={guesses}
+          guesses={newGuesses}
         />
       </div>
     </div>
