@@ -32,16 +32,13 @@ type Props = {
   children?: ReactNode
 }
 
-
 export const GuessProvider = ({ children }: Props) => {
-
   // the dictionary that will be shared with other components
   const [dictionary, setDictionary] = useState<{[key: number]: Guess}>(()=>
 {
     const storedGameState = loadGameStateFromLocalStorage2()
     return storedGameState?.guesses ?? {}
 });
-    // loadGameStateFromLocalStorage2() || {})
 
   // when the dictionary changes, save it to local storage
   useEffect(() => {

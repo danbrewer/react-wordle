@@ -1,8 +1,6 @@
 import { CharStatus } from '../../lib/statuses'
 import classnames from 'classnames'
-// import { REVEAL_TIME_MS, LOADING_REVEAL_TIME_MS } from '../../constants/settings'
 import { getStoredIsHighContrastMode } from '../../lib/localStorage'
-// import classNames from 'classnames'
 import { useContext, useEffect, useState } from 'react'
 import { GuessContext } from '../../context/GameStateContext'
 
@@ -10,8 +8,6 @@ type Props = {
   value?: string
   status?: CharStatus
   isRevealing?: boolean
-  // isCompleted?: boolean
-  //isLoading?:boolean
   position?: number
   row?:number
   completedRow?: boolean
@@ -31,8 +27,6 @@ export const Cell = ({
 
   const [currentStatus, setCurrentStatus] = useState(null||'');
   const [animationDelay, setAnimationDelay] = useState('0ms');
-  // const [statusChanged, setStatusChanged] = useState(isRevealing);
-  // const [flip, setFlip] = useState(1);
   const [classes, setClasses] = useState("");
   const [key] = useState(row);
 

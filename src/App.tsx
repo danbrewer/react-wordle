@@ -17,6 +17,7 @@ import { useAlert } from './context/AlertContext'
 import { isInAppBrowser } from './lib/browser'
 import { Guess } from './components/types/guess'
 import { GuessContext } from './context/GameStateContext'
+import ApiVisualizer from './components/api/ApiVisualizer'
 function App() {
   const { showError: showErrorAlert } = useAlert()
 
@@ -29,11 +30,6 @@ function App() {
   })
 
   const [currentRowClass, setCurrentRowClass] = useState('')
-
-  //   const [dictionary, setDictionary] = useState<{[key: number]: Guess}>(() => {
-  //   const storedGameState2 = loadGameStateFromLocalStorage2()
-  //   return storedGameState2?.dictionary ?? [];
-  // })
 
   useEffect(() => {
     DISCOURAGE_INAPP_BROWSERS &&
@@ -112,13 +108,8 @@ function App() {
     ) {
       // set the current guess as not new...
       currentGuess.isNew = false
+
       // ...and save all the guesses to local storage
-      // setGuesses([...guesses, currentGuess])
-
-      // load the guesses from gameStateContext
-      // let dict = gameStateContext?.dictionary ?? {};;
-      // dict[0] = currentGuess;
-
       if (gameStateContext != null) {
         const dictionary = { ...gameStateContext.dictionary }
         dictionary[guesses.length] = currentGuess
@@ -148,6 +139,7 @@ function App() {
             currentRowClassName={currentRowClass}
           />
         </div>
+        <ApiVisualizer />
         <Keyboard
           onChar={onChar}
           onDelete={onDelete}
