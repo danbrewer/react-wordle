@@ -42,8 +42,8 @@ function App() {
 
   // startup effect handlers
   useEffect(() => {
-    document.documentElement.classList.remove('dark')
-    document.documentElement.classList.remove('high-contrast')
+    // document.documentElement.classList.remove('dark')
+    // document.documentElement.classList.remove('high-contrast')
   })
 
   const clearCurrentRowClass = () => {
@@ -129,9 +129,9 @@ function App() {
     gameStateContext == null ? [] : Object.values(gameStateContext?.dictionary) // gameStateContext?.dictionary
 
   return (
-    <div className="h-screen flex flex-col">
-      <div className="pt-2 px-1 pb-8 md:max-w-7xl w-full mx-auto sm:px-6 lg:px-8 flex flex-col grow">
-        <div className="pb-6 grow">
+    <div className="h-screen flex flex-row max-h-screen">
+      <div className="pt-2 px-1 pb-8 md:max-w-7xl w-full mx-auto sm:px-6 lg:px-8 flex flex-row grow">
+        <div className="pb-6 grow-[2]">
           <Grid
             solution={solution}
             guesses={newGuesses} // guesses}
