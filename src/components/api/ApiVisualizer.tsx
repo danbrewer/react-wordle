@@ -107,9 +107,9 @@ const ApiVisualizer: React.FC = () => {
       className="justify-center flex-col"
       style={{
         overflowY: 'clip',
-        backgroundColor: 'lightgreen',
+        backgroundColor: 'lightcoral',
         display: 'flex',
-        flexGrow: 1,
+        width: '33vw',
       }}
     >
       {/* <div style={{ width: '50%', height: '100%' }}>
@@ -118,23 +118,29 @@ const ApiVisualizer: React.FC = () => {
         <pre>{postData}</pre>
       </div> */}
       <h4 className="text-2xl font-bold dark:text-white text-center">
-        {response?.wordCount} words found
+        {response?.wordCount} word{(response?.wordCount ?? 0) === 1 ? '' : 's'}{' '}
+        found
       </h4>
       <div
-        className="mt-3"
+        style={{
+          backgroundColor: 'lightpink',
+          height: '20px',
+        }}
+      ></div>
+      <div
+        className=""
         style={{
           //   width: '50%',
           height: '100%',
           overflowY: 'scroll',
-          backgroundColor: 'yellow',
+          backgroundColor: 'lightpink',
         }}
       >
         {response?.wordList.map((word: string) => (
-          <div key={word} className="text-2xl text-center">
+          <p key={word} className="text-3xl text-center">
             {word}
-          </div>
+          </p>
         ))}
-        {/* <pre>{JSON.stringify(response?.wordList, null, 2)}</pre> */}
       </div>
     </div>
   )

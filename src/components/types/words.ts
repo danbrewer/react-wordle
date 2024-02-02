@@ -1,4 +1,4 @@
 export type Words = {
-  wordCount: string
+  wordCount: number
   wordList: string[]
 }
