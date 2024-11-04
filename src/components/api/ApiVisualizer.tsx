@@ -43,7 +43,7 @@ const ApiVisualizer: React.FC = () => {
       hits: '.....',
       misses: [],
       deadLetters: '',
-      allowDupes: 'N',
+      allowDupes: 'Y',
     }
 
     if (gameStateContext) {
